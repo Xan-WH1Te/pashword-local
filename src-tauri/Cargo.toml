@@ -28,4 +28,5 @@ hex = "0.4"
 aes-gcm = "0.10"
 rand = "0.8"
 rusqlite = { version = "0.31", features = ["bundled"] }
+dirs = "5"
 
