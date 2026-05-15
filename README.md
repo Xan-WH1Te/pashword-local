@@ -1,7 +1,44 @@
-# Tauri + React + Typescript
+# Pashword Local
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+A self-hosted, offline password generator and vault. Deterministic password generation
+forked from [pashword/pashword](https://github.com/pashword/pashword). Built with
+Tauri v2 + React + Rust.
 
-## Recommended IDE Setup
+## Features
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- **Deterministic password generation** — same inputs always produce the same password
+- **Encrypted local vault** — AES-256-GCM encrypted SQLite storage
+- **No server, no cloud** — everything stays on your device
+- **Cross-platform** — Windows desktop + Android
+
+## Build from source
+
+### Prerequisites
+- Rust (rustup)
+- Node.js 22+
+- Tauri CLI (`cargo install tauri-cli`)
+
+### Desktop (Windows)
+```bash
+npm install
+cargo tauri build
+# Output: src-tauri/target/release/bundle/nsis/Pashword_*.exe
+```
+
+### Android
+```bash
+npm install
+cargo tauri android init
+cargo tauri android build
+# Output: .apk
+```
+
+## Security
+
+All vault data is encrypted with AES-256-GCM. The encryption key is derived from
+your master password using Pashword's SHA3-512 → scrypt → SHAKE-256 pipeline.
+The master password is never stored. If you forget it, the vault is unrecoverable.
+
+## License
+
+AGPL-3.0 (inherited from pashword/pashword)
