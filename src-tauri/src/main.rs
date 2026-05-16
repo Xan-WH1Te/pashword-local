@@ -8,14 +8,10 @@ fn main() {
     tauri::Builder::default()
         .manage(AppState {
             vault: Mutex::new(None),
-            encryption_key: Mutex::new(None),
             db_path,
         })
         .invoke_handler(tauri::generate_handler![
             commands::generate_password,
-            commands::setup_vault,
-            commands::unlock_vault,
-            commands::is_vault_initialized,
             commands::save_entry,
             commands::list_entries,
             commands::delete_entry,

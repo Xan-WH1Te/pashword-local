@@ -10,7 +10,7 @@ export function Generator({ onSaved }: Props) {
   const [username, setUsername] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [showKey, setShowKey] = useState(false);
-  const [length, setLength] = useState(32);
+  const [length, setLength] = useState(20);
   const [generated, setGenerated] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -51,8 +51,19 @@ export function Generator({ onSaved }: Props) {
 
   const canGenerate = website && username && secretKey;
 
+  const LengthLabel: Record<number, string> = {
+    11: "Short",
+    15: "Medium",
+    20: "Large (Recommended)",
+    24: "Long",
+    32: "Extra Long",
+    40: "Huge",
+  };
+
+  const lengthOptions = [11, 15, 20, 24, 32, 40, 48, 64];
+
   return (
-    <div className="w-full max-w-[500px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-2xl p-8 backdrop-blur-xl shadow-2xl">
+    <div className="w-full max-w-[500px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-2xl p-8 backdrop-blur-2xl shadow-2xl" style={{ boxShadow: "0 8px 32px rgba(139,92,246,0.08), 0 0 0 1px rgba(255,255,255,0.04) inset" }}>
       <h2 className="text-xl font-bold text-white text-center mb-1">
         Pashword
       </h2>
@@ -64,43 +75,52 @@ export function Generator({ onSaved }: Props) {
         {/* Website */}
         <div>
           <label className="block text-xs text-[#a0a0b8] uppercase tracking-wider mb-1.5">
-            Website
+            Website{" "}
+            <span className="text-[#666] font-normal normal-case tracking-normal">
+              — Enter the website address here
+            </span>
           </label>
           <input
             type="text"
-            placeholder="example.com"
+            placeholder="Example: reddit.com, forum.zorin.com"
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
-            className="w-full bg-[#0d0d18] border border-[rgba(255,255,255,0.10)] rounded-[10px] px-4 py-3 text-white placeholder-[#666] text-sm focus:outline-none focus:border-[#8b5cf6] focus:shadow-[0_0_0_2px_rgba(139,92,246,0.3)] transition-all"
+            className="w-full bg-[#0d0d18] border border-[rgba(255,255,255,0.10)] rounded-[10px] px-4 py-3 text-white placeholder-[#555] text-sm focus:outline-none focus:border-[#8b5cf6] focus:shadow-[0_0_0_2px_rgba(139,92,246,0.3)] transition-all"
           />
         </div>
 
         {/* Username */}
         <div>
           <label className="block text-xs text-[#a0a0b8] uppercase tracking-wider mb-1.5">
-            Username
+            Username{" "}
+            <span className="text-[#666] font-normal normal-case tracking-normal">
+              — Enter the username for that website
+            </span>
           </label>
           <input
             type="text"
-            placeholder="alice@example.com"
+            placeholder="Example: nayam_amarshe"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full bg-[#0d0d18] border border-[rgba(255,255,255,0.10)] rounded-[10px] px-4 py-3 text-white placeholder-[#666] text-sm focus:outline-none focus:border-[#8b5cf6] focus:shadow-[0_0_0_2px_rgba(139,92,246,0.3)] transition-all"
+            className="w-full bg-[#0d0d18] border border-[rgba(255,255,255,0.10)] rounded-[10px] px-4 py-3 text-white placeholder-[#555] text-sm focus:outline-none focus:border-[#8b5cf6] focus:shadow-[0_0_0_2px_rgba(139,92,246,0.3)] transition-all"
           />
         </div>
 
         {/* Secret Key */}
         <div>
           <label className="block text-xs text-[#a0a0b8] uppercase tracking-wider mb-1.5">
-            Secret Key
+            Secret Key{" "}
+            <span className="text-[#666] font-normal normal-case tracking-normal">
+              — A strong secret only you know. Keep it safe and use it every time.
+            </span>
           </label>
           <div className="relative">
             <input
               type={showKey ? "text" : "password"}
-              placeholder="Your secret key"
+              placeholder="Example: JimmyNeutron10$"
               value={secretKey}
               onChange={(e) => setSecretKey(e.target.value)}
-              className="w-full bg-[#0d0d18] border border-[rgba(255,255,255,0.10)] rounded-[10px] px-4 py-3 pr-14 text-white placeholder-[#666] text-sm focus:outline-none focus:border-[#8b5cf6] focus:shadow-[0_0_0_2px_rgba(139,92,246,0.3)] transition-all"
+              className="w-full bg-[#0d0d18] border border-[rgba(255,255,255,0.10)] rounded-[10px] px-4 py-3 pr-14 text-white placeholder-[#555] text-sm focus:outline-none focus:border-[#8b5cf6] focus:shadow-[0_0_0_2px_rgba(139,92,246,0.3)] transition-all"
             />
             <button
               onClick={() => setShowKey(!showKey)}
@@ -113,19 +133,22 @@ export function Generator({ onSaved }: Props) {
           </div>
         </div>
 
-        {/* Length */}
+        {/* Pashword Length */}
         <div>
           <label className="block text-xs text-[#a0a0b8] uppercase tracking-wider mb-1.5">
-            Length
+            Pashword Length{" "}
+            <span className="text-[#666] font-normal normal-case tracking-normal">
+              — Change if the website has specific requirements
+            </span>
           </label>
           <select
             value={length}
             onChange={(e) => setLength(Number(e.target.value))}
             className="w-full bg-[#0d0d18] border border-[rgba(255,255,255,0.10)] rounded-[10px] px-4 py-3 text-white text-sm focus:outline-none focus:border-[#8b5cf6] transition-all appearance-none cursor-pointer"
           >
-            {[16, 20, 24, 28, 32, 40, 48, 64].map((n) => (
+            {lengthOptions.map((n) => (
               <option key={n} value={n}>
-                {n === 32 ? `${n} (Recommended)` : n}
+                {LengthLabel[n] ? `${n} — ${LengthLabel[n]}` : n}
               </option>
             ))}
           </select>
@@ -142,7 +165,7 @@ export function Generator({ onSaved }: Props) {
 
         {/* Result */}
         {generated && (
-          <div className="mt-4 p-4 bg-[#0d0d18] border border-[rgba(255,255,255,0.08)] rounded-[10px] space-y-3">
+          <div className="mt-4 p-4 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-[10px] space-y-3 backdrop-blur-xl">
             <div className="flex items-center justify-between">
               <span className="text-xs text-[#a0a0b8] uppercase tracking-wider">
                 Your Pashword

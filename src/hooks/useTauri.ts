@@ -14,15 +14,6 @@ export const commands = {
   generatePassword: (website: string, username: string, secretKey: string, length: number) =>
     invoke<string>("generate_password", { website, username, secretKey, length }),
 
-  setupVault: (masterPassword: string) =>
-    invoke<void>("setup_vault", { masterPassword }),
-
-  unlockVault: (masterPassword: string) =>
-    invoke<boolean>("unlock_vault", { masterPassword }),
-
-  isVaultInitialized: () =>
-    invoke<boolean>("is_vault_initialized"),
-
   saveEntry: (website: string, username: string, secretKey: string, pashword: string) =>
     invoke<number>("save_entry", { website, username, secretKey, pashword }),
 
