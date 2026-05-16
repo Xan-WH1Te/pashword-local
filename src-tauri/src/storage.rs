@@ -21,11 +21,8 @@ impl Vault {
         let conn = Connection::open(db_path)
             .map_err(|e| format!("failed to open database: {}", e))?;
 
-        let wal_mode: String = conn.query_row("PRAGMA journal_mode=WAL", [], |row| row.get(0))
-            .map_err(|e| format!("wal: {}", e))?;
-        if wal_mode != "wal" {
-            return Err(format!("expected WAL journal mode, got {}", wal_mode));
-        }
+        // Enable WAL mode (best-effort, not all filesystems support it)
+        let _ = conn.execute("PRAGMA journal_mode=WAL", []);
 
         conn.execute(
             "CREATE TABLE IF NOT EXISTS vault (

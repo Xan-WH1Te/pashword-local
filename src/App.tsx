@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Generator } from "./components/Generator";
 import { Vault } from "./components/Vault";
@@ -8,24 +8,30 @@ type Screen = "generator" | "vault";
 function App() {
   const [screen, setScreen] = useState<Screen>("generator");
   const [refreshKey, setRefreshKey] = useState(0);
+  const appWindow = useMemo(() => getCurrentWindow(), []);
 
   const refreshVault = () => setRefreshKey((k) => k + 1);
 
   return (
     <main className="relative min-h-screen flex flex-col items-center px-4 py-8 overflow-hidden">
-      {/* Title bar with window controls */}
-      <div className="fixed top-0 left-0 right-0 h-10 flex items-center justify-between px-3 z-20" data-tauri-drag-region>
-        <span className="text-[#a0a0b8] text-xs font-medium ml-2">Pashword</span>
+      {/* Title bar — fully draggable */}
+      <div
+        className="fixed top-0 left-0 right-0 h-10 flex items-center justify-between px-3 z-20 cursor-grab active:cursor-grabbing"
+        data-tauri-drag-region
+      >
+        <span className="text-[#a0a0b8] text-xs font-bold ml-2 select-none">Pashword</span>
         <div className="flex gap-1">
           <button
-            onClick={() => getCurrentWindow().minimize()}
-            className="w-10 h-7 flex items-center justify-center rounded-md text-[#a0a0b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors text-lg font-bold leading-none"
+            onClick={() => appWindow.minimize()}
+            className="w-10 h-7 flex items-center justify-center rounded-md text-[#a0a0b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors text-lg font-bold leading-none cursor-pointer"
+            tabIndex={-1}
           >
             &#x2013;
           </button>
           <button
-            onClick={() => getCurrentWindow().close()}
-            className="w-10 h-7 flex items-center justify-center rounded-md text-[#a0a0b8] hover:text-white hover:bg-red-500/60 transition-colors text-base font-bold leading-none"
+            onClick={() => appWindow.close()}
+            className="w-10 h-7 flex items-center justify-center rounded-md text-[#a0a0b8] hover:text-white hover:bg-red-500/60 transition-colors text-base font-bold leading-none cursor-pointer"
+            tabIndex={-1}
           >
             &#x2715;
           </button>
@@ -42,7 +48,7 @@ function App() {
       <nav className="flex gap-2 mt-6 mb-8 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-xl p-1 backdrop-blur-xl z-10">
         <button
           onClick={() => setScreen("generator")}
-          className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={`px-5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
             screen === "generator"
               ? "bg-gradient-to-r from-[#8b5cf6] to-[#a855f7] text-white shadow-lg shadow-purple-500/20"
               : "text-[#a0a0b8] hover:text-white"
@@ -52,7 +58,7 @@ function App() {
         </button>
         <button
           onClick={() => setScreen("vault")}
-          className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={`px-5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
             screen === "vault"
               ? "bg-gradient-to-r from-[#8b5cf6] to-[#a855f7] text-white shadow-lg shadow-purple-500/20"
               : "text-[#a0a0b8] hover:text-white"

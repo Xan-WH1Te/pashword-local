@@ -34,19 +34,12 @@ fn dirs_next() -> Option<PathBuf> {
     { dirs::data_dir() }
 }
 
-fn get_vault(state: &State<AppState>) -> Result<(), String> {
+fn with_vault<T>(state: &State<AppState>, f: impl FnOnce(&Vault) -> Result<T, String>) -> Result<T, String> {
     let mut vault_lock = state.vault.lock().map_err(|e| format!("lock: {}", e))?;
     if vault_lock.is_none() {
         *vault_lock = Some(Vault::open(&state.db_path)?);
     }
-    Ok(())
-}
-
-fn with_vault<T>(state: &State<AppState>, f: impl FnOnce(&Vault) -> Result<T, String>) -> Result<T, String> {
-    get_vault(state)?;
-    let vault_lock = state.vault.lock().map_err(|e| format!("lock: {}", e))?;
-    let vault = vault_lock.as_ref().unwrap();
-    f(vault)
+    f(vault_lock.as_ref().unwrap())
 }
 
 #[tauri::command]
