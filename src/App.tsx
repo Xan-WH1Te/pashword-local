@@ -5,6 +5,8 @@ import { Vault } from "./components/Vault";
 
 type Screen = "generator" | "vault";
 
+const isAndroid = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+
 function App() {
   const [screen, setScreen] = useState<Screen>("generator");
   const [refreshKey, setRefreshKey] = useState(0);
@@ -12,30 +14,38 @@ function App() {
 
   const refreshVault = () => setRefreshKey((k) => k + 1);
 
+  const topBarClass = isAndroid
+    ? "pt-[env(safe-area-inset-top,24px)] pb-2 backdrop-blur-2xl bg-[rgba(10,10,16,0.7)]"
+    : "h-10 cursor-grab active:cursor-grabbing";
+
   return (
     <main className="relative min-h-screen flex flex-col items-center px-4 py-8 overflow-hidden">
-      {/* Title bar — fully draggable */}
+      {/* Title bar — draggable on desktop, blurred status bar on Android */}
       <div
-        className="fixed top-0 left-0 right-0 h-10 flex items-center justify-between px-3 z-20 cursor-grab active:cursor-grabbing"
+        className={`fixed top-0 left-0 right-0 flex items-center justify-between px-3 z-20 ${topBarClass}`}
         data-tauri-drag-region
       >
-        <span className="text-[#a0a0b8] text-xs font-bold ml-2 select-none">Pashword</span>
-        <div className="flex gap-1">
-          <button
-            onClick={() => appWindow.minimize()}
-            className="w-10 h-7 flex items-center justify-center rounded-md text-[#a0a0b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors text-lg font-bold leading-none cursor-pointer"
-            tabIndex={-1}
-          >
-            &#x2013;
-          </button>
-          <button
-            onClick={() => appWindow.close()}
-            className="w-10 h-7 flex items-center justify-center rounded-md text-[#a0a0b8] hover:text-white hover:bg-red-500/60 transition-colors text-base font-bold leading-none cursor-pointer"
-            tabIndex={-1}
-          >
-            &#x2715;
-          </button>
-        </div>
+        <span className="text-[#a0a0b8] text-xs font-bold ml-2 select-none">
+          {isAndroid ? "" : "Pashword"}
+        </span>
+        {!isAndroid && (
+          <div className="flex gap-1">
+            <button
+              onClick={() => appWindow.minimize()}
+              className="w-10 h-7 flex items-center justify-center rounded-md text-[#a0a0b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors text-lg font-bold leading-none cursor-pointer"
+              tabIndex={-1}
+            >
+              &#x2013;
+            </button>
+            <button
+              onClick={() => appWindow.close()}
+              className="w-10 h-7 flex items-center justify-center rounded-md text-[#a0a0b8] hover:text-white hover:bg-red-500/60 transition-colors text-base font-bold leading-none cursor-pointer"
+              tabIndex={-1}
+            >
+              &#x2715;
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Animated background */}
@@ -45,7 +55,7 @@ function App() {
       <div className="fixed bottom-1/4 right-1/4 w-64 h-64 bg-fuchsia-500/10 rounded-full blur-[96px] animate-pulse -z-10" style={{ animationDuration: "10s" }} />
 
       {/* Nav tabs */}
-      <nav className="flex gap-2 mt-6 mb-8 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-xl p-1 backdrop-blur-xl z-10">
+      <nav className={`flex gap-2 mb-8 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-xl p-1 backdrop-blur-xl z-10 ${isAndroid ? "mt-12" : "mt-6"}`}>
         <button
           onClick={() => setScreen("generator")}
           className={`px-5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
