@@ -24,6 +24,21 @@ impl Vault {
         // Enable WAL mode (best-effort, not all filesystems support it)
         let _ = conn.execute("PRAGMA journal_mode=WAL", []);
 
+        // Check if old BLOB-schema table exists from previous encrypted build
+        let needs_migration = match conn.query_row(
+            "SELECT type FROM pragma_table_info('vault') WHERE name='website'",
+            [],
+            |row| row.get::<_, String>(0),
+        ) {
+            Ok(col_type) => col_type == "BLOB",
+            Err(_) => false, // table doesn't exist yet
+        };
+
+        if needs_migration {
+            conn.execute("DROP TABLE IF EXISTS vault", [])
+                .map_err(|e| format!("drop old table: {}", e))?;
+        }
+
         conn.execute(
             "CREATE TABLE IF NOT EXISTS vault (
                 id         INTEGER PRIMARY KEY AUTOINCREMENT,
